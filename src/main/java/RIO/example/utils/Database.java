@@ -2,9 +2,7 @@ package RIO.example.utils;
 
 import RIO.example.readers.PropertyReader;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Database {
     private static final Database INSTANCE = new Database(); // робимо статичне поле INSTANCE що містить єдиний екземпляр класу Database.
@@ -27,6 +25,22 @@ public class Database {
     }
     public Connection getConnection() {
         return connection;
+    }
+    public void insertClient(String name) {
+        String insertQuery = "INSERT INTO client (name) VALUES (?) RETURNING id";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                System.out.println("Inserted client with id: " + id);
+            } else {
+                throw new RuntimeException("Error getting generated id after insert");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error inserting client: " + e.getMessage());
+        }
     }
     public void closeConnection() {
         try {

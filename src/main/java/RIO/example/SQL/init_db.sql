@@ -28,12 +28,13 @@ foreign key (worker_id)
 references worker(id) on delete cascade;
 
 create table client (
-	id bigint primary key,
+	id serial primary key,
 	name varchar not null check (length(name::text) >= 2 AND length(name::text) <= 1000)
 );
 
 create table project (
-id bigint primary key,
+id serial primary key,
+project_name varchar (255),
 client_id bigint not null,
 start_date date not null,
 finish_date date not null
